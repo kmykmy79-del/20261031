@@ -506,16 +506,33 @@ ul, ol { list-style: none; }
 .position { color: var(--accent-2) !important; font-weight: 500; margin-bottom: 12px; }
 .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
 .tag { padding: 4px 14px; border-radius: 999px; background: var(--sky-100); color: var(--sky-500); font-size: 13px; font-weight: 700; }
-.contacts { display: grid; gap: 8px; }
+.contacts { display: grid; gap: 8px; margin-top: 14px; }
 .contacts li { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 15px; }
 .contacts b { color: var(--text-soft); font-weight: 500; min-width: 64px; }
 .contacts a { color: var(--navy-700); text-decoration: underline; text-underline-offset: 3px; }
-.footer-bottom {
-  margin-top: 56px; padding: 24px 0; text-align: center;
-  border-top: 1px solid rgba(47, 116, 207, 0.2);
-  color: var(--text-soft); font-size: 14px;
+/* 페이지 맨 아래 푸터 */
+.site-foot { margin-top: 72px; padding: 48px 0 24px; background: var(--navy-700); color: #c9d8ec; font-size: 14px; }
+.foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1.2fr; gap: 32px; }
+.foot-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.foot-logo b { color: #fff; font-size: 17px; }
+.foot-logo small { display: block; color: #9fb4d1; font-size: 13px; }
+.foot-logo .version { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.25); color: #fff; vertical-align: 2px; }
+.foot-brand p { line-height: 1.7; max-width: 360px; }
+.foot-col h4 { color: #fff; font-size: 15px; margin-bottom: 12px; }
+.foot-links { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; }
+.foot-links a, .foot-ext a, .foot-top { color: #c9d8ec; transition: color .2s; }
+.foot-links a:hover, .foot-ext a:hover, .foot-top:hover, .foot-contacts a:hover { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+.foot-contacts { display: grid; gap: 10px; }
+.foot-contacts li { display: flex; gap: 10px; align-items: flex-start; }
+.foot-contacts b { display: block; color: #fff; font-size: 13px; font-weight: 700; }
+.foot-contacts a { color: #c9d8ec; }
+.foot-ext { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 14px; }
+.foot-ext a { padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.25); }
+.foot-bottom {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px;
+  margin-top: 36px; padding: 20px 70px 0 0; border-top: 1px solid rgba(255, 255, 255, 0.15); color: #9fb4d1; font-size: 13px;
 }
-.footer-bottom p { font-weight: 700; color: var(--text); }
+.foot-top { font-weight: 700; }
 
 /* ── 맨 위로 ──────────────────────────────── */
 .to-top {
@@ -976,6 +993,8 @@ button.tile:active:not(:disabled) { transform: scale(.98); }
 /* ── 반응형 (추가 요소) ───────────────────── */
 @media (max-width: 860px) {
   .participate-grid, .lobby, .admin-grid2 { grid-template-columns: 1fr; }
+  .foot-grid { grid-template-columns: 1fr 1fr; }
+  .foot-brand { grid-column: 1 / -1; }
   .ai-grid { grid-template-columns: 1fr 1fr; }
   .admin-body { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
   .admin-tabs { flex-direction: row; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--line); padding: 8px; }
@@ -983,6 +1002,9 @@ button.tile:active:not(:disabled) { transform: scale(.98); }
 }
 @media (max-width: 560px) {
   .form-grid, .done-summary, .qe-opts { grid-template-columns: 1fr; }
+  .foot-grid { grid-template-columns: 1fr; gap: 24px; }
+  .foot-bottom { flex-direction: column; align-items: flex-start; }
+  .site-foot { padding: 36px 0 90px; }
   .attend-now { flex-direction: column; align-items: stretch; }
   .attend-grid { grid-template-columns: repeat(5, 1fr); }
   .quiz-card { padding: 18px 14px; }
@@ -1451,24 +1473,36 @@ window.SITE_CONFIG = {
 
   /* ── 교수자 (페이지 맨 아래 푸터에 표시) ───── */
   instructor: {
-    title: "👩‍🏫 교수자 소개",
-    name: "[ 교수자 이름 ]",
-    position: "고려대학교 사범대학 컴퓨터학교육과 교수",
-    photo: "", // 사진 경로 (예: "images/professor.jpg"). 비워 두면 이모지가 표시됩니다.
-    photoEmoji: "👩‍🏫",
-    bio: "[ 교수자 소개 문구를 입력하세요. 연구 분야, 경력 등을 2~3문장으로 적습니다. ]",
-    fields: ["정보교육", "교재 개발", "AI 교육", "데이터 리터러시"],
+    title: "🧑‍🏫 교수자 소개",
+    name: "김민영",
+    position: "연구교수 · 고려대학교 AI중심대학사업단",
+    // 사진 경로: 사진을 쓰려면 index.html과 같은 폴더에 profile.jpg를 넣고 아래를 "profile.jpg"로 바꾸세요.
+    // 비워 두거나 파일을 못 불러오면 아래 이모지가 대신 보입니다.
+    photo: "",
+    photoEmoji: "🧑‍🏫",
+    bio: "",      // 소개 문구 (비워 두면 표시하지 않음)
+    fields: [],   // 연구 분야 태그 (비워 두면 표시하지 않음)
     contacts: [
-      { icon: "✉️", label: "이메일", value: "[ email@korea.ac.kr ]", href: "" },
-      { icon: "🏢", label: "연구실", value: "[ 건물 · 호실 ]", href: "" },
-      { icon: "⏰", label: "면담 시간", value: "[ 요일 · 시간 ] (사전 예약)", href: "" }
+      { icon: "📱", label: "휴대폰", value: "010-4600-0522", href: "tel:010-4600-0522" },
+      { icon: "✉️", label: "이메일", value: "kmin88@korea.ac.kr", href: "mailto:kmin88@korea.ac.kr" },
+      { icon: "🏛️", label: "주소", value: "서울시 성북구 안암로 145 고려대학교", href: "" }
     ]
   },
 
-  /* ── 하단 ──────────────────────────────────── */
+  /* ── 하단(푸터) — 페이지 맨 아래에 표시됩니다 ── */
+  // 바로가기 링크는 위의 상단 메뉴(nav)를 그대로 씁니다.
   footer: {
     text: "고려대학교 사범대학 · 정보 컴퓨터 교과교재개발론",
-    copyright: "© 2026 Korea University College of Education"
+    description: "AI와 데이터로 정보·컴퓨터 교과의 교재를 직접 기획하고 만드는 실습 중심 강의입니다.",
+    contacts: [
+      { icon: "🏛️", label: "주소", value: "서울특별시 성북구 안암로 145 고려대학교 사범대학" },
+      { icon: "☎️", label: "학과 사무실", value: "[ 02-○○○○-○○○○ ]", href: "" },
+      { icon: "✉️", label: "문의", value: "[ email@korea.ac.kr ]", href: "" }
+    ],
+    links: [
+      { label: "고려대학교", url: "https://www.korea.ac.kr" }
+    ],
+    copyright: "© 2026 Korea University College of Education. All rights reserved."
   },
 
   /* ── 공지사항 (관리자 화면에서 올린 공지가 첫 화면 아래에 표시됩니다) ── */
@@ -1926,8 +1960,9 @@ window.SITE_CONFIG = {
   }
 
   function renderFooter(p, f) {
+    // 사진 파일이 없거나 못 불러오면 이모지로 바뀝니다.
     const photo = p.photo
-      ? `<img src="${esc(p.photo)}" alt="${esc(p.name)}" />`
+      ? `<img src="${esc(p.photo)}" alt="${esc(p.name)} 프로필 사진" onerror="this.replaceWith(Object.assign(document.createElement('span'), { textContent: this.dataset.emoji }))" data-emoji="${esc(p.photoEmoji)}" />`
       : `<span>${esc(p.photoEmoji)}</span>`;
     return `
       <div class="container">
@@ -1937,8 +1972,8 @@ window.SITE_CONFIG = {
           <div class="profile-body">
             <h3>${esc(p.name)}</h3>
             <p class="position">${esc(p.position)}</p>
-            <p>${esc(p.bio)}</p>
-            <div class="tags">${list(p.fields, (t) => `<span class="tag">${esc(t)}</span>`)}</div>
+            ${p.bio ? `<p>${esc(p.bio)}</p>` : ""}
+            ${(p.fields || []).length ? `<div class="tags">${list(p.fields, (t) => `<span class="tag">${esc(t)}</span>`)}</div>` : ""}
             <ul class="contacts">
               ${list(p.contacts, (c) => {
                 const v = c.href ? `<a href="${esc(c.href)}">${esc(c.value)}</a>` : esc(c.value);
@@ -1948,10 +1983,33 @@ window.SITE_CONFIG = {
           </div>
         </div>
       </div>
-      <div class="footer-bottom">
+      <div class="site-foot">
         <div class="container">
-          <p>${esc(f.text)}</p>
-          <small>${esc(f.copyright)}</small>
+          <div class="foot-grid">
+            <div class="foot-brand">
+              <div class="foot-logo"><span class="brand-logo">${esc(C.site.logoEmoji)}</span>
+                <div><b>${esc(C.site.title)}</b>${C.site.version ? ` <span class="version">${esc(C.site.version)}</span>` : ""}
+                  <small>${esc(C.site.university)} · ${esc(C.site.department)}</small></div></div>
+              ${f.description ? `<p>${esc(f.description)}</p>` : ""}
+            </div>
+            <nav class="foot-col" aria-label="바로가기">
+              <h4>바로가기</h4>
+              <ul class="foot-links">${list(C.nav, (n) => `<li><a href="#${esc(n.id)}" data-scroll="${esc(n.id)}">${esc(n.label)}</a></li>`)}</ul>
+            </nav>
+            <div class="foot-col">
+              <h4>연락처</h4>
+              <ul class="foot-contacts">${list(f.contacts, (c) => {
+                const v = c.href ? `<a href="${esc(c.href)}">${esc(c.value)}</a>` : esc(c.value);
+                return `<li><span aria-hidden="true">${esc(c.icon)}</span><div><b>${esc(c.label)}</b>${v}</div></li>`;
+              })}</ul>
+              ${(f.links || []).length ? `<div class="foot-ext">${list(f.links, (l) => `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)} ↗</a>`)}</div>` : ""}
+            </div>
+          </div>
+          <div class="foot-bottom">
+            <small>${esc(f.copyright)}</small>
+            <span>${esc(f.text)}${C.site.updated ? ` · 최종 수정 ${esc(C.site.updated)}` : ""}</span>
+            <a href="#top" data-scroll="top" class="foot-top">맨 위로 ↑</a>
+          </div>
         </div>
       </div>`;
   }
@@ -3489,7 +3547,7 @@ window.SITE_CONFIG = {
     wide: "넓게 표시", pattern: "형식(정규식)", error: "형식 오류 문구", minLength: "최소 글자 수", demoMode: "데모 모드",
     loginHelp: "로그인 안내", demoNote: "데모 안내", maxFileMB: "최대 파일 크기(MB)", allowedExt: "허용 확장자",
     checkinOpensBefore: "출석 시작(수업 몇 분 전)", doneTitle: "완료 제목", doneText: "완료 문구", id: "id",
-    stats: "통계", autocomplete: "자동 완성", inputmode: "입력 방식", match: "같아야 하는 칸", version: "버전", updated: "수정일"
+    stats: "통계", autocomplete: "자동 완성", inputmode: "입력 방식", match: "같아야 하는 칸", version: "버전", updated: "수정일", links: "외부 링크"
   };
   const ADMIN_TABS = [["edit", "✏️ 사이트 편집"], ["roster", "👥 수강생 명단"], ["notice", "📢 공지사항"], ["records", "📊 기록·내려받기"], ["config", "💾 설정 파일"]];
   const labelOf = (k) => (typeof k === "number" ? "" : KEY_LABELS[k] ? `${KEY_LABELS[k]} <small>${esc(k)}</small>` : esc(k));
