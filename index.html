@@ -986,6 +986,14 @@ button.tile:active:not(:disabled) { transform: scale(.98); }
 .lite-card { display: grid; gap: 8px; align-content: start; padding: 16px; border-radius: 16px; border: 1px solid var(--line); background: #fff; }
 .lite-card h4 { font-size: 16px; }
 .lite-card .btn-sm { justify-self: start; }
+.key-state { margin-left: 6px; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 700; background: var(--sky-50); color: var(--text-soft); }
+.key-state.on { background: #e7f8ef; color: #17734a; }
+.key-input { display: flex; gap: 6px; }
+.key-input input { flex: 1; min-width: 0; }
+.key-result { margin: 0; font-size: 14px; font-weight: 600; color: var(--text-soft); }
+.key-result.ok { color: #17734a; }
+.key-result.bad { color: #c0392b; }
+.key-save { justify-content: space-between; align-items: center; margin-bottom: 4px; }
 .danger-zone { border-color: #f3c6cd; background: #fffafb; }
 .file-btn { cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
 .admin-list { display: grid; gap: 8px; }
@@ -1170,7 +1178,7 @@ window.SITE_CONFIG = {
     department: "컴퓨터학교육과",
     semester: "2026학년도 2학기",
     logoEmoji: "🤖",               // 헤더·푸터 로고와 브라우저 탭 아이콘에 쓰이는 이모지
-    version: "v1.0.3",            // 헤더 제목 옆에 표시되는 버전. 사이트를 고칠 때마다 올려 주세요.
+    version: "v1.0.4",            // 헤더 제목 옆에 표시되는 버전. 사이트를 고칠 때마다 올려 주세요.
     updated: "2026-11-01"         // 버전에 마우스를 올리면 보이는 수정일
   },
 
@@ -4156,7 +4164,7 @@ window.SITE_CONFIG = {
     checkinOpensBefore: "출석 시작(수업 몇 분 전)", doneTitle: "완료 제목", doneText: "완료 문구", id: "id",
     stats: "통계", autocomplete: "자동 완성", inputmode: "입력 방식", match: "같아야 하는 칸", version: "버전", updated: "수정일", links: "외부 링크", perPage: "한 페이지 공지 수", maxPopups: "팝업 공지 최대 수"
   };
-  const ADMIN_TABS = [["edit", "✏️ 사이트 편집"], ["roster", "👥 수강생 명단"], ["notice", "📢 공지사항"], ["records", "📊 기록·내려받기"], ["config", "💾 설정 파일"]];
+  const ADMIN_TABS = [["edit", "✏️ 사이트 편집"], ["roster", "👥 수강생 명단"], ["notice", "📢 공지사항"], ["records", "📊 기록·내려받기"], ["api", "🔑 API 키"], ["config", "💾 설정 파일"]];
   const labelOf = (k) => (typeof k === "number" ? "" : KEY_LABELS[k] ? `${KEY_LABELS[k]} <small>${esc(k)}</small>` : esc(k));
   const summaryOf = (v) => {
     const s = v && typeof v === "object" ? v.title || v.label || v.name || v.q || v.question || v.id || "" : v;
@@ -4390,6 +4398,84 @@ window.SITE_CONFIG = {
       ${table(d.head, d.rows)}
       <p class="muted small">CSV 파일은 엑셀에서 바로 열 수 있습니다. 기록은 이 브라우저에 저장된 내용입니다.</p>`;
   }
+  // 🔑 API 키: 키는 이 브라우저에만 보관하고, 설정 파일·백업·GitHub에는 절대 넣지 않습니다.
+  const KEY_SLOTS = { claude: "aiKey", baze: "bazeKey" };
+  let keyTest = {};
+  const maskKey = (k) => `••••••••${k.slice(-4)}`;
+  function apiTab() {
+    const AI = (C.quiz && C.quiz.ai) || {};
+    const remembered = !!(Store.get("aiKey", "") || Store.get("bazeKey", ""));
+    const card = (id, icon, name, ph, help) => {
+      const k = readKey(KEY_SLOTS[id]), s = keyTest[id];
+      return `
+        <div class="lite-card key-card">
+          <h4>${icon} ${name} <span class="key-state${k ? " on" : ""}">${k ? `저장됨 ${esc(maskKey(k))}` : "없음"}</span></h4>
+          <p class="muted small">${help}</p>
+          <div class="key-input">
+            <input type="password" name="${id}" autocomplete="off" placeholder="${k ? "새 키로 바꾸려면 입력 (비워 두면 그대로)" : ph}" aria-label="${name}" />
+            <button type="button" class="btn-small" data-key-show="${id}">보기</button>
+          </div>
+          <div class="row-actions">
+            <button type="button" class="btn-small" data-key-test="${id}"${k ? "" : " disabled"}>🔌 연결 확인</button>
+            <button type="button" class="btn-small danger" data-key-del="${id}"${k ? "" : " disabled"}>🗑️ 지우기</button>
+          </div>
+          ${s ? `<p class="key-result ${s.ok === true ? "ok" : s.ok === false ? "bad" : ""}" role="status">${esc(s.msg)}</p>` : ""}
+        </div>`;
+    };
+    return `
+      <p class="status-note">🔐 API 키는 <b>이 브라우저에만</b> 저장돼요. 설정 파일·데이터 백업·GitHub에는 들어가지 않습니다.
+        여기서 저장한 키는 이 브라우저의 AI 퀴즈 출제, 1주차 AI 토론, 6주차 이미지 생성에 자동으로 쓰여요.
+        학생 기기에는 전달되지 않으니, 학생은 각 화면에서 키를 직접 입력해야 해요.</p>
+      <form data-form="apikeys" novalidate>
+        <div class="admin-grid2">
+          ${card("claude", "🟠", "Claude API 키", "sk-ant-...", "Anthropic 콘솔에서 발급한 키. AI 퀴즈 출제에 쓰여요.")}
+          ${card("baze", "🔷", "BAZE API 키", "BAZE에서 발급한 키", `BAZE 게이트웨이 키. AI 퀴즈·AI 토론·이미지 생성에 쓰여요. <a href="https://docs.factchat.kr/docs/korea-seoul/api-gateway/getting-started/overview#api-gateway" target="_blank" rel="noopener">개발자 문서 ↗</a>`)}
+        </div>
+        <div class="row-actions key-save">
+          <label class="ed-bool"><input type="checkbox" name="remember"${remembered ? " checked" : ""} /> 이 브라우저에 키 기억하기 (끄면 탭을 닫을 때 지워져요 · 공용 PC에서는 끄세요)</label>
+          <button class="btn btn-primary btn-sm">💾 키 저장</button>
+        </div>
+        <p class="form-error" role="alert"></p>
+      </form>
+      <form class="lite-card" data-form="ai-settings" novalidate>
+        <h4>🤖 AI 모델 설정</h4>
+        <p class="muted small">키가 아닌 일반 설정이라 사이트 설정에 저장돼요. 다른 기기에도 쓰려면 ‘설정 파일’ 탭에서 내려받아 index.html에 반영하세요.</p>
+        <label class="ed-field"><span>퀴즈 출제에 먼저 쓸 AI</span>
+          <select name="provider">
+            <option value="claude"${AI.provider !== "baze" ? " selected" : ""}>Claude API (실패하면 BAZE로 재시도)</option>
+            <option value="baze"${AI.provider === "baze" ? " selected" : ""}>BAZE API (실패하면 Claude로 재시도)</option>
+          </select></label>
+        <label class="ed-field"><span>Claude API 모델</span><input name="model" value="${esc(AI.model || "claude-opus-5-5")}" list="claude-models" /></label>
+        <label class="ed-field"><span>BAZE 모델 (퀴즈·토론)</span><input name="bazeModel" value="${esc(AI.bazeModel || "claude-opus-5-5")}" list="claude-models" /></label>
+        <datalist id="claude-models"><option value="claude-opus-5-5"></option><option value="claude-sonnet-5-5"></option><option value="claude-haiku-5-5"></option></datalist>
+        <p class="muted small">BAZE 모델 목록: <a href="https://docs.factchat.kr/docs/korea-seoul/api-gateway/getting-started/models" target="_blank" rel="noopener">모델 문서 ↗</a></p>
+        <p class="form-error" role="alert"></p>
+        <button class="btn btn-primary btn-sm">모델 설정 저장</button>
+      </form>`;
+  }
+  // 아주 짧은 요청(최대 16토큰)을 보내 키가 동작하는지 확인합니다.
+  async function pingKey(id, key) {
+    const AI = (C.quiz && C.quiz.ai) || {};
+    const res = id === "claude"
+      ? await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+          body: JSON.stringify({ model: AI.model || "claude-opus-5-5", max_tokens: 16, messages: [{ role: "user", content: "ping" }] })
+        })
+      : await fetch(AI.bazeUrl || "https://api.baze.co/v1/gateway/chat/completions/", {
+          method: "POST",
+          headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
+          body: JSON.stringify({ model: AI.bazeModel || "claude-opus-5-5", max_tokens: 16, messages: [{ role: "user", content: "ping" }] })
+        });
+    if (res.ok) return;
+    const data = await res.json().catch(() => ({}));
+    const d = data.detail || data.error || {};
+    const msg = (typeof d === "string" ? d : d.message) || data.message || `HTTP ${res.status}`;
+    throw new Error(res.status === 401 || res.status === 403 ? "키가 올바르지 않거나 권한이 없어요."
+      : res.status === 404 ? "모델을 찾을 수 없어요. 아래 ‘AI 모델 설정’을 확인해 주세요."
+      : res.status === 429 ? "요청이 많아요. 잠시 뒤 다시 확인해 주세요." : String(msg));
+  }
+
   function configTab() {
     const overridden = Store.get("configOverride", null) !== null;
     return `
@@ -4410,7 +4496,7 @@ window.SITE_CONFIG = {
           <p class="form-error" data-import-err role="alert"></p>
         </div>
         <form class="lite-card" data-form="password" novalidate>
-          <h4>🔑 비밀번호 변경</h4>
+          <h4>🔒 관리자 비밀번호 변경</h4>
           <input type="password" name="pw1" placeholder="새 비밀번호 (6자 이상)" autocomplete="new-password" aria-label="새 비밀번호" />
           <input type="password" name="pw2" placeholder="새 비밀번호 확인" autocomplete="new-password" aria-label="새 비밀번호 확인" />
           <p class="form-error" role="alert"></p>
@@ -4436,7 +4522,7 @@ window.SITE_CONFIG = {
     if (!adminDlg) return;
     const panel = adminDlg.el.querySelector("#admin-panel"), y = panel.scrollTop;
     adminDlg.el.querySelectorAll("[data-admin-tab]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.adminTab === adminTab)));
-    panel.innerHTML = { edit: editTab, roster: rosterTab, notice: noticeTab, records: recordsTab, config: configTab }[adminTab]();
+    panel.innerHTML = { edit: editTab, roster: rosterTab, notice: noticeTab, records: recordsTab, api: apiTab, config: configTab }[adminTab]();
     panel.scrollTop = keepScroll ? y : 0;
   }
 
@@ -4614,11 +4700,40 @@ window.SITE_CONFIG = {
       try {
         for (let i = 0; i < localStorage.length; i++) {
           const k = localStorage.key(i);
-          if (k.startsWith(PREFIX) && k !== PREFIX + "session") items[k.slice(PREFIX.length)] = localStorage.getItem(k);
+          if (k.startsWith(PREFIX) && !["session", "aiKey", "bazeKey"].includes(k.slice(PREFIX.length))) items[k.slice(PREFIX.length)] = localStorage.getItem(k);
         }
       } catch (e) { /* 무시 */ }
       downloadFile(`사이트데이터백업_${ymd(new Date())}.json`, JSON.stringify({ app: "icmd-backup", at: new Date().toISOString(), items }, null, 2), "application/json");
       return toast("데이터 백업 파일을 내려받았어요.");
+    }
+    // API 키
+    if ((el = t("[data-key-show]"))) {
+      const input = adminDlg.el.querySelector(`[data-form="apikeys"] [name="${el.dataset.keyShow}"]`);
+      input.type = input.type === "password" ? "text" : "password";
+      el.textContent = input.type === "password" ? "보기" : "숨기기";
+      return;
+    }
+    if ((el = t("[data-key-test]"))) {
+      const id = el.dataset.keyTest, key = readKey(KEY_SLOTS[id]);
+      if (!key) return;
+      keyTest[id] = { ok: null, msg: "연결 확인 중…" };
+      renderAdmin(true);
+      pingKey(id, key)
+        .then(() => (keyTest[id] = { ok: true, msg: "✅ 연결 성공! 이 키를 쓸 수 있어요." }))
+        .catch((e) => (keyTest[id] = { ok: false, msg: `❌ ${e instanceof TypeError ? "네트워크에 연결하지 못했어요. 인터넷 연결을 확인해 주세요." : e.message}` }))
+        .then(() => { if (adminDlg && adminTab === "api") renderAdmin(true); });
+      return;
+    }
+    if ((el = t("[data-key-del]"))) {
+      const id = el.dataset.keyDel, name = id === "claude" ? "Claude API 키" : "BAZE API 키";
+      confirmDialog({ title: `${name}를 지울까요?`, message: `이 브라우저에 저장된 ${name}를 지워요.<br />키를 쓰는 기능을 쓰려면 다시 입력해야 해요.`, ok: "지우기" }).then((ok) => {
+        if (!ok) return;
+        saveKey(KEY_SLOTS[id], "", false);
+        delete keyTest[id];
+        toast(`${name}를 지웠어요.`);
+        if (adminDlg) renderAdmin(true);
+      });
+      return;
     }
     if (t("[data-reset-config]")) {
       if (!confirm("관리자 화면에서 고친 설정을 지우고 원래 설정으로 되돌릴까요?")) return;
@@ -4681,6 +4796,25 @@ window.SITE_CONFIG = {
       renderNotices();
       toast("공지를 수정했어요.");
       return renderAdmin(true);
+    }
+    if (kind === "apikeys") {
+      const c = v("claude"), b = v("baze"), remember = form.elements.remember.checked;
+      if (c && !/^sk-ant-/.test(c)) return (err.textContent = "Claude API 키는 ‘sk-ant-’로 시작해요. 키를 다시 확인해 주세요.");
+      if (/\s/.test(c + b)) return (err.textContent = "키 안에 띄어쓰기가 들어 있어요. 복사한 키를 다시 확인해 주세요.");
+      // 새로 입력한 키는 저장하고, 비워 둔 칸은 기존 키를 그대로 두되 '기억하기' 선택에 맞춰 보관 위치만 옮깁니다.
+      saveKey("aiKey", c || readKey("aiKey"), remember);
+      saveKey("bazeKey", b || readKey("bazeKey"), remember);
+      if (c) delete keyTest.claude;
+      if (b) delete keyTest.baze;
+      toast(c || b ? `API 키를 저장했어요.${remember ? "" : " (탭을 닫으면 지워져요)"}` : "키 보관 방식을 저장했어요.");
+      return renderAdmin(true);
+    }
+    if (kind === "ai-settings") {
+      const model = v("model"), bazeModel = v("bazeModel");
+      if (!model || !bazeModel) return (err.textContent = "모델 이름을 입력해 주세요.");
+      const next = clone(C);
+      next.quiz = { ...(next.quiz || {}), ai: { ...((next.quiz && next.quiz.ai) || {}), provider: form.elements.provider.value, model, bazeModel } };
+      return saveOverride(next, { tab: "api" });
     }
     if (kind === "password") {
       const p1 = form.elements.pw1.value, p2 = form.elements.pw2.value;
