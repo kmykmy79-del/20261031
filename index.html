@@ -155,6 +155,10 @@ ul, ol { list-style: none; }
 .btn:hover { transform: translateY(-2px); }
 .btn-primary { background: var(--grad); color: #fff; box-shadow: 0 8px 22px rgba(31, 134, 220, 0.35); }
 .btn-ghost { background: #fff; color: var(--navy-700); border: 1px solid var(--aqua-200); }
+.btn-danger { background: #c93a4f; color: #fff; box-shadow: 0 8px 22px rgba(201, 58, 79, 0.3); }
+.confirm-actions { display: flex; gap: 10px; margin-top: 18px; }
+.confirm-actions .btn { flex: 1; }
+.confirm-modal p { color: var(--text); }
 
 /* 한눈에 보기 */
 .quick-info {
@@ -797,6 +801,11 @@ input:focus, select:focus, textarea:focus { outline: none; border-color: var(--s
 .notice-list summary .muted { margin-left: auto; font-size: 13px; }
 .notice-list p { padding: 0 0 12px; white-space: pre-line; color: var(--text); font-size: 15px; }
 .notice-list li.important strong { color: #c93a4f; }
+.notice-pager { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px; margin-top: 14px; padding-top: 14px; border-top: 1px dashed var(--line); }
+.pager-btn, .pager-num { min-width: 36px; height: 36px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: #fff; cursor: pointer; font: inherit; font-size: 14px; color: var(--text-soft); transition: background .2s, color .2s; }
+.pager-btn:hover:not(:disabled), .pager-num:hover { background: var(--sky-50); color: var(--text); }
+.pager-num.active { background: var(--grad); color: #fff; border-color: transparent; font-weight: 700; }
+.pager-btn:disabled { opacity: .4; cursor: default; }
 
 /* ── 팝업 · 대화상자 · 토스트 · 폭죽 ─────── */
 .modal-backdrop {
@@ -982,6 +991,22 @@ button.tile:active:not(:disabled) { transform: scale(.98); }
 .admin-list { display: grid; gap: 8px; }
 .admin-list li { display: flex; justify-content: space-between; gap: 10px; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); }
 .admin-list p { white-space: pre-line; font-size: 14px; margin-top: 4px; }
+.chip-pin { background: var(--sky-100); color: var(--navy-700); }
+.chip-popup { background: #fff3d6; color: #8a5a00; }
+.notice-popup { width: min(520px, 100%); text-align: left; }
+.notice-popup > .badge { margin-bottom: 4px; }
+.np-list { display: grid; gap: 12px; max-height: 52vh; overflow-y: auto; margin: 12px 0 16px; }
+.np-item { padding: 14px 16px; border-radius: 14px; background: var(--sky-50); border: 1px solid var(--line); }
+.np-item.important { border-color: #f3c6cd; background: #fff8f9; }
+.np-item h3 { font-size: 18px; margin: 4px 0 6px; }
+.np-item p { white-space: pre-line; font-size: 15px; color: var(--text); margin-bottom: 6px; }
+.np-chips { display: flex; gap: 6px; }
+.np-chips:empty { display: none; }
+.notice-admin li.pinned { border-color: var(--sky-400); background: var(--sky-50); }
+.notice-admin li > div:first-child { min-width: 0; flex: 1; }
+.notice-actions { display: flex; align-items: flex-start; gap: 6px; flex: none; }
+.notice-admin li.editing { display: block; border-color: var(--sky-400); }
+.notice-edit { display: grid; gap: 8px; }
 .sub-tabs { margin-bottom: 12px; }
 .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: #fff; margin-bottom: 10px; }
 .table-wrap table { width: 100%; border-collapse: collapse; font-size: 14px; white-space: nowrap; }
@@ -1086,6 +1111,7 @@ button.tile:active:not(:disabled) { transform: scale(.98); }
   .msg { max-width: 96%; }
   .chat-log { max-height: 40vh; }
   .img-opts, .img-figure { grid-template-columns: 1fr; }
+  .notice-admin li { flex-direction: column; }
   .foot-bottom { flex-direction: column; align-items: flex-start; }
   .site-foot { padding: 36px 0 90px; }
   .attend-now { flex-direction: column; align-items: stretch; }
@@ -1144,7 +1170,7 @@ window.SITE_CONFIG = {
     department: "컴퓨터학교육과",
     semester: "2026학년도 2학기",
     logoEmoji: "🤖",               // 헤더·푸터 로고와 브라우저 탭 아이콘에 쓰이는 이모지
-    version: "v1.0.2",            // 헤더 제목 옆에 표시되는 버전. 사이트를 고칠 때마다 올려 주세요.
+    version: "v1.0.3",            // 헤더 제목 옆에 표시되는 버전. 사이트를 고칠 때마다 올려 주세요.
     updated: "2026-11-01"         // 버전에 마우스를 올리면 보이는 수정일
   },
 
@@ -1626,8 +1652,7 @@ window.SITE_CONFIG = {
     description: "AI와 데이터로 정보·컴퓨터 교과의 교재를 직접 기획하고 만드는 실습 중심 강의입니다.",
     contacts: [
       { icon: "🏛️", label: "주소", value: "서울특별시 성북구 안암로 145 고려대학교 사범대학" },
-      { icon: "☎️", label: "학과 사무실", value: "[ 02-○○○○-○○○○ ]", href: "" },
-      { icon: "✉️", label: "문의", value: "[ email@korea.ac.kr ]", href: "" }
+      { icon: "✉️", label: "문의 (김민영)", value: "kmin88@korea.ac.kr", href: "mailto:kmin88@korea.ac.kr" }
     ],
     links: [
       { label: "고려대학교", url: "https://www.korea.ac.kr" }
@@ -1637,7 +1662,9 @@ window.SITE_CONFIG = {
 
   /* ── 공지사항 (관리자 화면에서 올린 공지가 첫 화면 아래에 표시됩니다) ── */
   notices: {
-    title: "공지사항"
+    title: "공지사항",
+    perPage: 3,  // 첫 화면에 한 번에 보여 줄 공지 수(나머지는 페이지 이동으로)
+    maxPopups: 3 // 🔔 팝업으로 띄울 수 있는 공지 수
   },
 
   /*
@@ -2928,7 +2955,9 @@ window.SITE_CONFIG = {
     document.body.appendChild(back);
     document.body.classList.add("no-scroll");
     const last = document.activeElement;
+    const isTop = () => [...document.querySelectorAll(".modal-backdrop:not([hidden])")].pop() === back;
     const onKey = (ev) => {
+      if (!isTop()) return; // 팝업이 겹쳐 있으면 맨 위 팝업만 키보드에 반응
       if (ev.key === "Escape") close();
       if (ev.key === "Tab") {
         const f = [...back.querySelectorAll("button, a[href], input, select, textarea")].filter((x) => !x.disabled && x.offsetParent);
@@ -2940,7 +2969,8 @@ window.SITE_CONFIG = {
     function close() {
       back.classList.remove("show");
       document.removeEventListener("keydown", onKey);
-      document.body.classList.remove("no-scroll");
+      // 아래에 다른 팝업이 남아 있으면 배경 스크롤 잠금을 유지
+      document.body.classList.toggle("no-scroll", [...document.querySelectorAll(".modal-backdrop:not([hidden])")].some((b) => b !== back));
       setTimeout(() => back.remove(), 250);
       if (last && last.focus) last.focus({ preventScroll: true });
     }
@@ -2948,6 +2978,27 @@ window.SITE_CONFIG = {
     document.addEventListener("keydown", onKey);
     requestAnimationFrame(() => back.classList.add("show"));
     return { el: back.querySelector(".modal"), close };
+  }
+
+  // 되돌릴 수 없는 작업 전에 한 번 더 묻는 확인 팝업. 확인하면 true, 취소·닫기면 false.
+  function confirmDialog({ title, message, ok = "삭제" }) {
+    return new Promise((resolve) => {
+      let answered = false;
+      const d = makeDialog("modal-sm confirm-modal", `
+        <div class="lock-icon">⚠️</div>
+        <h3>${esc(title)}</h3>
+        <p>${message}</p>
+        <div class="confirm-actions">
+          <button type="button" class="btn btn-ghost" data-close data-no>취소</button>
+          <button type="button" class="btn btn-danger" data-yes>${esc(ok)}</button>
+        </div>`, title);
+      d.el.querySelector("[data-yes]").addEventListener("click", () => { answered = true; d.close(); resolve(true); });
+      const watch = new MutationObserver(() => {
+        if (!document.body.contains(d.el)) { watch.disconnect(); if (!answered) resolve(false); }
+      });
+      watch.observe(document.body, { childList: true });
+      setTimeout(() => d.el.querySelector("[data-no]").focus(), 50); // 실수로 Enter를 눌러도 지워지지 않게 '취소'에 포커스
+    });
   }
 
   /* ── 관리자 인증 ───────────────────────────── */
@@ -2998,33 +3049,92 @@ window.SITE_CONFIG = {
 
   /* ── 공지사항 ──────────────────────────────── */
   const noticeEl = document.getElementById("notices");
+  // 고정한 공지가 맨 위, 그다음 최신순. (예전에 '중요'로 올린 공지는 고정으로 봅니다)
+  const isPinned = (n) => (n.pinned === undefined ? !!n.important : !!n.pinned);
   const sortedNotices = () => Store.get("notices", []).slice()
-    .sort((a, b) => (b.important ? 1 : 0) - (a.important ? 1 : 0) || String(b.at).localeCompare(String(a.at)));
+    .sort((a, b) => (isPinned(b) ? 1 : 0) - (isPinned(a) ? 1 : 0) || String(b.at).localeCompare(String(a.at)));
+  // 🔔 팝업으로 띄울 수 있는 공지 수 제한
+  const maxPopups = () => Math.max(1, Number(C.notices.maxPopups) || 3);
+  const popupCount = (exceptId) => Store.get("notices", []).filter((n) => n.popup && n.id !== exceptId).length;
+  const popupLimitMsg = () => `팝업은 최대 ${maxPopups()}개까지 켤 수 있어요. 다른 공지의 팝업을 먼저 꺼 주세요.`;
+  const noticeChips = (n) => `${isPinned(n) ? `<span class="chip chip-pin">📌 고정</span>` : ""}${n.important ? `<span class="chip chip-task">중요</span>` : ""}`;
+  // 첫 화면에는 한 페이지에 perPage개씩 보여 주고, 나머지는 아래 페이지 이동으로 넘겨 봅니다.
+  let noticePage = 1;
   function renderNotices() {
     if (!noticeEl) return;
     const items = sortedNotices();
+    const per = Math.max(1, Number(C.notices.perPage) || 3), pages = Math.max(1, Math.ceil(items.length / per));
+    noticePage = Math.min(Math.max(1, noticePage), pages);
+    const shown = items.slice((noticePage - 1) * per, noticePage * per);
     noticeEl.hidden = !items.length;
     noticeEl.innerHTML = items.length ? `
       <div class="container">
         <div class="card notice-card">
-          <div class="notice-head"><h3>📢 ${esc(C.notices.title)}</h3><span class="muted">${items.length}건</span></div>
+          <div class="notice-head"><h3>📢 ${esc(C.notices.title)}</h3><span class="muted">전체 ${items.length}건</span></div>
           <ul class="notice-list">
-            ${list(items, (n, i) => `
-              <li class="${n.important ? "important" : ""}">
+            ${list(shown, (n, i) => `
+              <li class="${n.important ? "important" : ""}${isPinned(n) ? " pinned" : ""}">
                 <details${i === 0 ? " open" : ""}>
                   <summary>
-                    ${n.important ? `<span class="chip chip-task">중요</span>` : ""}
+                    ${noticeChips(n)}
                     <strong>${esc(n.title)}</strong>
-                    <span class="muted">${fmtShort(new Date(n.at))}</span>
+                    <span class="muted">${fmtShort(new Date(n.at))}${n.updatedAt ? " · 수정됨" : ""}</span>
                   </summary>
                   <p>${esc(n.body)}</p>
                 </details>
               </li>`)}
           </ul>
+          ${pages > 1 ? `
+          <nav class="notice-pager" aria-label="공지사항 페이지">
+            <button class="pager-btn" data-notice-page="${noticePage - 1}"${noticePage === 1 ? " disabled" : ""} aria-label="이전 페이지">‹ 이전</button>
+            ${Array.from({ length: pages }, (_, k) => k + 1).map((p) => `
+              <button class="pager-num${p === noticePage ? " active" : ""}" data-notice-page="${p}" aria-label="${p}페이지"${p === noticePage ? ` aria-current="page"` : ""}>${p}</button>`).join("")}
+            <button class="pager-btn" data-notice-page="${noticePage + 1}"${noticePage === pages ? " disabled" : ""} aria-label="다음 페이지">다음 ›</button>
+          </nav>` : ""}
         </div>
       </div>` : "";
   }
+  if (noticeEl) noticeEl.addEventListener("click", (ev) => {
+    const b = ev.target.closest("[data-notice-page]");
+    if (!b || b.disabled) return;
+    noticePage = Number(b.dataset.noticePage);
+    renderNotices();
+    noticeEl.querySelector(`[data-notice-page="${noticePage}"].pager-num`)?.focus({ preventScroll: true });
+  });
   renderNotices();
+
+  // 🔔 팝업으로 지정한 공지는 사이트에 들어올 때 팝업으로 보여 줍니다(관리자 모드에서는 띄우지 않음).
+  function showNoticePopup() {
+    if (isAdmin()) return;
+    const hide = Store.get("noticePopupHide", {}), now = Date.now();
+    const items = sortedNotices().filter((n) => n.popup && !(hide[n.id] > now)).slice(0, maxPopups());
+    if (!items.length) return;
+    setTimeout(() => {
+      const d = makeDialog("notice-popup", `
+        <button class="modal-close" data-close aria-label="닫기">×</button>
+        <span class="badge">📢 ${esc(C.notices.title)}</span>
+        <div class="np-list">${list(items, (n) => `
+          <article class="np-item${n.important ? " important" : ""}">
+            <div class="np-chips">${noticeChips(n)}</div>
+            <h3>${esc(n.title)}</h3>
+            <p>${esc(n.body)}</p>
+            <span class="muted small">${fmtDate(new Date(n.at))}${n.updatedAt ? " · 수정됨" : ""}</span>
+          </article>`)}</div>
+        <button class="btn btn-primary" data-close>확인</button>
+        <div class="modal-foot">
+          <label><input type="checkbox" data-np-hide /> 오늘 하루 보지 않기</label>
+          <button class="link-btn" data-close>닫기</button>
+        </div>`, "공지 팝업");
+      // 체크하면 바로 오늘 자정까지 숨김(어떤 방법으로 닫아도 적용)
+      d.el.querySelector("[data-np-hide]").addEventListener("change", (ev) => {
+        const h = Store.get("noticePopupHide", {}), until = new Date(); until.setHours(24, 0, 0, 0);
+        items.forEach((n) => { if (ev.target.checked) h[n.id] = until.getTime(); else delete h[n.id]; });
+        Store.set("noticePopupHide", h);
+      });
+      d.el.querySelector(".btn-primary").focus({ preventScroll: true });
+    }, 800);
+  }
+  showNoticePopup();
 
   /* ── 실시간 퀴즈 (카훗 방식: PIN·QR 입장 → 문제 → 정답 공개 → 순위 → 시상대) ── */
   const quizPanel = document.getElementById("quiz-panel");
@@ -4044,7 +4154,7 @@ window.SITE_CONFIG = {
     wide: "넓게 표시", pattern: "형식(정규식)", error: "형식 오류 문구", minLength: "최소 글자 수", demoMode: "데모 모드",
     loginHelp: "로그인 안내", demoNote: "데모 안내", maxFileMB: "최대 파일 크기(MB)", allowedExt: "허용 확장자",
     checkinOpensBefore: "출석 시작(수업 몇 분 전)", doneTitle: "완료 제목", doneText: "완료 문구", id: "id",
-    stats: "통계", autocomplete: "자동 완성", inputmode: "입력 방식", match: "같아야 하는 칸", version: "버전", updated: "수정일", links: "외부 링크"
+    stats: "통계", autocomplete: "자동 완성", inputmode: "입력 방식", match: "같아야 하는 칸", version: "버전", updated: "수정일", links: "외부 링크", perPage: "한 페이지 공지 수", maxPopups: "팝업 공지 최대 수"
   };
   const ADMIN_TABS = [["edit", "✏️ 사이트 편집"], ["roster", "👥 수강생 명단"], ["notice", "📢 공지사항"], ["records", "📊 기록·내려받기"], ["config", "💾 설정 파일"]];
   const labelOf = (k) => (typeof k === "number" ? "" : KEY_LABELS[k] ? `${KEY_LABELS[k]} <small>${esc(k)}</small>` : esc(k));
@@ -4058,7 +4168,7 @@ window.SITE_CONFIG = {
     : typeof v === "string" ? "" : v;
   const getAt = (obj, path) => path.reduce((o, k) => (o == null ? o : o[k]), obj);
 
-  let adminDlg = null, adminTab = "edit", editKey = "site", draft = null, jsonMode = false, recordTab = "attend";
+  let adminDlg = null, adminTab = "edit", editKey = "site", draft = null, jsonMode = false, recordTab = "attend", editingNotice = null;
 
   function saveOverride(conf, reopen) {
     Store.set("configOverride", conf);
@@ -4225,20 +4335,44 @@ window.SITE_CONFIG = {
   }
   function noticeTab() {
     const items = sortedNotices();
+    const editForm = (n) => `
+        <form class="notice-edit" data-form="notice-edit" data-id="${esc(n.id)}" novalidate>
+          <input name="title" value="${esc(n.title)}" aria-label="공지 제목" />
+          <textarea name="body" rows="4" aria-label="공지 내용">${esc(n.body)}</textarea>
+          <div class="row-actions">
+            <label class="ed-bool"><input type="checkbox" name="pinned"${isPinned(n) ? " checked" : ""} /> 📌 맨 위에 고정</label>
+            <label class="ed-bool"><input type="checkbox" name="important"${n.important ? " checked" : ""} /> 중요 표시</label>
+            <label class="ed-bool"><input type="checkbox" name="popup"${n.popup ? " checked" : ""} /> 🔔 팝업으로 띄우기</label>
+          </div>
+          <p class="form-error" role="alert"></p>
+          <div class="row-actions"><button class="btn btn-primary btn-sm">저장</button><button type="button" class="btn-small" data-notice-cancel>취소</button></div>
+        </form>`;
     return `
       <form class="lite-card" data-form="notice" novalidate>
         <h4>새 공지 올리기</h4>
         <input name="title" placeholder="제목" aria-label="공지 제목" />
         <textarea name="body" rows="4" placeholder="내용" aria-label="공지 내용"></textarea>
-        <label class="ed-bool"><input type="checkbox" name="important" /> 중요 공지로 맨 위에 고정</label>
+        <div class="row-actions">
+          <label class="ed-bool"><input type="checkbox" name="pinned" /> 📌 맨 위에 고정</label>
+          <label class="ed-bool"><input type="checkbox" name="important" /> 중요 표시(빨간 글씨)</label>
+          <label class="ed-bool"><input type="checkbox" name="popup" /> 🔔 팝업으로 띄우기</label>
+        </div>
+        <p class="muted small">🔔 팝업을 켜면 사이트에 들어올 때 이 공지가 팝업으로 떠요(학생은 ‘오늘 하루 보지 않기’ 선택 가능).</p>
         <p class="form-error" role="alert"></p>
         <button class="btn btn-primary btn-sm">공지 올리기</button>
       </form>
-      <h4 class="sub-title">올린 공지 (${items.length})</h4>
-      ${items.length ? `<ul class="admin-list">${list(items, (n) => `
-        <li><div>${n.important ? `<span class="chip chip-task">중요</span> ` : ""}<strong>${esc(n.title)}</strong>
-          <span class="muted small">${fmtDateTime(new Date(n.at))}</span><p class="muted">${esc(n.body)}</p></div>
-          <button class="icon-btn danger" data-notice-del="${esc(n.id)}" aria-label="공지 삭제">×</button></li>`)}</ul>`
+      <h4 class="sub-title">올린 공지 (${items.length}) <small class="muted">고정한 공지가 맨 위에 보여요</small></h4>
+      ${items.length ? `<ul class="admin-list notice-admin">${list(items, (n) => editingNotice === n.id ? `<li class="editing">${editForm(n)}</li>` : `
+        <li class="${isPinned(n) ? "pinned" : ""}">
+          <div>${noticeChips(n)}${n.popup ? `<span class="chip chip-popup">🔔 팝업</span>` : ""} <strong>${esc(n.title)}</strong>
+            <span class="muted small">${fmtDateTime(new Date(n.at))}${n.updatedAt ? ` · 수정 ${fmtDateTime(new Date(n.updatedAt))}` : ""}</span>
+            <p class="muted">${esc(n.body)}</p></div>
+          <div class="notice-actions">
+            <button class="btn-small${isPinned(n) ? " primary" : ""}" data-notice-pin="${esc(n.id)}" aria-pressed="${isPinned(n)}">${isPinned(n) ? "📌 고정 해제" : "📌 고정"}</button>
+            <button class="btn-small${n.popup ? " primary" : ""}" data-notice-popup="${esc(n.id)}" aria-pressed="${!!n.popup}">${n.popup ? "🔔 팝업 끄기" : "🔔 팝업"}</button>
+            <button class="btn-small" data-notice-edit="${esc(n.id)}">✏️ 수정</button>
+            <button class="btn-small danger" data-notice-del="${esc(n.id)}">🗑️ 삭제</button>
+          </div></li>`)}</ul>`
         : `<p class="muted empty-note">아직 올린 공지가 없습니다.</p>`}`;
   }
   function recordsTab() {
@@ -4384,7 +4518,7 @@ window.SITE_CONFIG = {
     const t = (sel) => ev.target.closest(sel);
     let el;
     if (t("[data-admin-logout]")) { adminDlg.close(); setAdmin(false); return toast("관리자 모드를 잠갔어요. 🔒"); }
-    if ((el = t("[data-admin-tab]"))) { adminTab = el.dataset.adminTab; draft = null; return renderAdmin(); }
+    if ((el = t("[data-admin-tab]"))) { adminTab = el.dataset.adminTab; draft = null; editingNotice = null; return renderAdmin(); }
     if ((el = t("[data-record-tab]"))) { recordTab = el.dataset.recordTab; return renderAdmin(); }
     if ((el = t("[data-csv]"))) { const [title, fn] = CSV_SOURCES[el.dataset.csv]; return downloadCSV(title, fn()); }
 
@@ -4434,11 +4568,38 @@ window.SITE_CONFIG = {
 
     // 공지
     if ((el = t("[data-notice-del]"))) {
-      if (!confirm("이 공지를 삭제할까요?")) return;
-      Store.set("notices", Store.get("notices", []).filter((n) => n.id !== el.dataset.noticeDel));
+      const id = el.dataset.noticeDel, n = Store.get("notices", []).find((x) => x.id === id);
+      if (!n) return;
+      confirmDialog({ title: "공지를 삭제할까요?", message: `‘<b>${esc(n.title)}</b>’ 공지를 정말 삭제할까요?<br />삭제하면 되돌릴 수 없어요.` }).then((ok) => {
+        if (!ok) return;
+        Store.set("notices", Store.get("notices", []).filter((x) => x.id !== id));
+        if (editingNotice === id) editingNotice = null;
+        renderNotices();
+        toast("공지를 삭제했어요.");
+        renderAdmin(true);
+      });
+      return;
+    }
+    if ((el = t("[data-notice-pin]"))) {
+      const ns = Store.get("notices", []), n = ns.find((x) => x.id === el.dataset.noticePin);
+      if (!n) return;
+      n.pinned = !isPinned(n);
+      Store.set("notices", ns);
       renderNotices();
+      toast(n.pinned ? "공지를 맨 위에 고정했어요. 📌" : "고정을 해제했어요.");
       return renderAdmin(true);
     }
+    if ((el = t("[data-notice-popup]"))) {
+      const ns = Store.get("notices", []), n = ns.find((x) => x.id === el.dataset.noticePopup);
+      if (!n) return;
+      if (!n.popup && popupCount(n.id) >= maxPopups()) return toast(popupLimitMsg());
+      n.popup = !n.popup;
+      Store.set("notices", ns);
+      toast(n.popup ? "이 공지를 사이트 방문 시 팝업으로 띄워요. 🔔" : "팝업을 껐어요.");
+      return renderAdmin(true);
+    }
+    if ((el = t("[data-notice-edit]"))) { editingNotice = el.dataset.noticeEdit; renderAdmin(true); return adminDlg.el.querySelector(".notice-edit input").focus(); }
+    if (t("[data-notice-cancel]")) { editingNotice = null; return renderAdmin(true); }
 
     // 설정 파일
     if ((el = t("[data-export]"))) {
@@ -4499,11 +4660,27 @@ window.SITE_CONFIG = {
     if (kind === "notice") {
       const title = v("title"), body = v("body");
       if (!title || !body) return (err.textContent = title ? "내용을 입력해 주세요." : "제목을 입력해 주세요.");
-      Store.set("notices", [...Store.get("notices", []),
-        { id: `n${Date.now().toString(36)}`, title, body, important: form.elements.important.checked, at: new Date().toISOString() }]);
+      if (form.elements.popup.checked && popupCount() >= maxPopups()) return (err.textContent = popupLimitMsg());
+      Store.set("notices", [...Store.get("notices", []), {
+        id: `n${Date.now().toString(36)}`, title, body,
+        pinned: form.elements.pinned.checked, important: form.elements.important.checked, popup: form.elements.popup.checked, at: new Date().toISOString()
+      }]);
       renderNotices();
       toast("공지를 올렸어요. 첫 화면 아래에 표시됩니다.");
       return renderAdmin();
+    }
+    if (kind === "notice-edit") {
+      const title = v("title"), body = v("body");
+      if (!title || !body) return (err.textContent = title ? "내용을 입력해 주세요." : "제목을 입력해 주세요.");
+      const ns = Store.get("notices", []), n = ns.find((x) => x.id === form.dataset.id);
+      if (!n) { editingNotice = null; return renderAdmin(true); }
+      if (form.elements.popup.checked && !n.popup && popupCount(n.id) >= maxPopups()) return (err.textContent = popupLimitMsg());
+      Object.assign(n, { title, body, pinned: form.elements.pinned.checked, important: form.elements.important.checked, popup: form.elements.popup.checked, updatedAt: new Date().toISOString() });
+      Store.set("notices", ns);
+      editingNotice = null;
+      renderNotices();
+      toast("공지를 수정했어요.");
+      return renderAdmin(true);
     }
     if (kind === "password") {
       const p1 = form.elements.pw1.value, p2 = form.elements.pw2.value;
@@ -4570,13 +4747,15 @@ window.SITE_CONFIG = {
       }
     };
     modal.addEventListener("click", (ev) => { if (ev.target === modal || ev.target.closest("[data-close]")) close(); });
-    setTimeout(() => {
+    const show = () => {
+      if (document.querySelector(".notice-popup")) return setTimeout(show, 500); // 공지 팝업을 닫은 뒤에 띄움
       lastFocus = document.activeElement;
       modal.hidden = false;
       requestAnimationFrame(() => modal.classList.add("show"));
       modal.querySelector(".btn-primary").focus({ preventScroll: true });
       document.addEventListener("keydown", onKey);
-    }, P.delay || 1500);
+    };
+    setTimeout(show, P.delay || 1500);
   }
 
   /* ── 첫 방문 환영 폭죽 ─────────────────────── */
