@@ -89,6 +89,11 @@ ul, ol { list-style: none; }
 .brand-text { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
 .brand-text b { font-size: 16px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .brand-text small { font-size: 12px; color: var(--text-soft); }
+.brand-title { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.version {
+  flex: none; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; line-height: 1.6;
+  background: var(--sky-100); color: var(--navy-700); border: 1px solid var(--sky-200);
+}
 
 .site-nav { display: flex; gap: 4px; }
 .site-nav a {
@@ -1033,7 +1038,9 @@ window.SITE_CONFIG = {
     university: "고려대학교 사범대학",
     department: "컴퓨터학교육과",
     semester: "2026학년도 2학기",
-    logoEmoji: "🌊"
+    logoEmoji: "🌊",
+    version: "v1.0.0",            // 헤더 제목 옆에 표시되는 버전. 사이트를 고칠 때마다 올려 주세요.
+    updated: "2026-11-01"         // 버전에 마우스를 올리면 보이는 수정일
   },
 
   /* ── 상단 메뉴 (id는 아래 섹션 id와 같아야 합니다) ── */
@@ -1954,7 +1961,7 @@ window.SITE_CONFIG = {
 
   document.querySelector(".brand").innerHTML = `
     <span class="brand-logo">${esc(C.site.logoEmoji)}</span>
-    <span class="brand-text"><b>${esc(C.site.title)}</b><small>${esc(C.site.university)}</small></span>`;
+    <span class="brand-text"><span class="brand-title"><b>${esc(C.site.title)}</b>${C.site.version ? `<span class="version" title="${esc(C.site.updated ? `수정일 ${C.site.updated}` : "버전")}">${esc(C.site.version)}</span>` : ""}</span><small>${esc(C.site.university)}</small></span>`;
 
   document.getElementById("site-nav").innerHTML = list(C.nav, (n) =>
     `<a href="#${esc(n.id)}" data-scroll="${esc(n.id)}">${esc(n.label)}</a>`);
@@ -3482,7 +3489,7 @@ window.SITE_CONFIG = {
     wide: "넓게 표시", pattern: "형식(정규식)", error: "형식 오류 문구", minLength: "최소 글자 수", demoMode: "데모 모드",
     loginHelp: "로그인 안내", demoNote: "데모 안내", maxFileMB: "최대 파일 크기(MB)", allowedExt: "허용 확장자",
     checkinOpensBefore: "출석 시작(수업 몇 분 전)", doneTitle: "완료 제목", doneText: "완료 문구", id: "id",
-    stats: "통계", autocomplete: "자동 완성", inputmode: "입력 방식", match: "같아야 하는 칸"
+    stats: "통계", autocomplete: "자동 완성", inputmode: "입력 방식", match: "같아야 하는 칸", version: "버전", updated: "수정일"
   };
   const ADMIN_TABS = [["edit", "✏️ 사이트 편집"], ["roster", "👥 수강생 명단"], ["notice", "📢 공지사항"], ["records", "📊 기록·내려받기"], ["config", "💾 설정 파일"]];
   const labelOf = (k) => (typeof k === "number" ? "" : KEY_LABELS[k] ? `${KEY_LABELS[k]} <small>${esc(k)}</small>` : esc(k));
